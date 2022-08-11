@@ -35,12 +35,12 @@ const Product = sequelize.define('Product', {
     rating: { type: DataTypes.INTEGER, defaultValue: 0 },    
 })
 
-const Basket = sequelize.define('Basket', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },    
-    userId: { type: DataTypes.INTEGER },
-    productId: { type: DataTypes.ARRAY(DataTypes.INTEGER) },    
+// const Basket = sequelize.define('Basket', {
+//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },    
+//     userId: { type: DataTypes.INTEGER },
+//     productId: { type: DataTypes.ARRAY(DataTypes.INTEGER) },    
        
-}, { timestamps: false })
+// }, { timestamps: false })
 
 const Category = sequelize.define('Category', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
