@@ -6,6 +6,7 @@ const filterController = require('../controllers/filter-controller');
 const router = new Router();
 const {body} = require('express-validator');
 const authMiddleware = require('../middlewares/auth-middleware');
+const roleAuthMiddleware = require('../middlewares/roleAuth-middleware');
 
 router.post('/account/register',
     //authMiddleware,
@@ -20,27 +21,27 @@ router.get('/account/refresh', userController.refresh);
 router.get('/account/users',  userController.getUsers);
 //--------------------------------
 router.get('/product/getCategories',  productController.getCategories);
-router.post('/product/newCategory',  productController.newCategory);
-router.delete('/product/deleteCategory',  productController.deleteCategory);
+router.post('/product/newCategory', authMiddleware, roleAuthMiddleware, productController.newCategory);
+router.delete('/product/deleteCategory', authMiddleware, roleAuthMiddleware,productController.deleteCategory);
 
 router.get('/product/getBrands',  productController.getBrands);
-router.post('/product/newBrand',  productController.newBrand);
-router.delete('/product/deleteBrand',  productController.deleteBrand);
+router.post('/product/newBrand', authMiddleware,roleAuthMiddleware, productController.newBrand);
+router.delete('/product/deleteBrand',authMiddleware, roleAuthMiddleware, productController.deleteBrand);
 
 router.get('/product/getProducts',  productController.getProducts);
 router.post('/product/newProduct',  productController.newProduct);
-router.delete('/product/deleteProduct',  productController.deleteProduct);
+router.delete('/product/deleteProduct', authMiddleware, roleAuthMiddleware,productController.deleteProduct);
 router.post('/product/getFilteredProducts',  productController.getFilteredProducts);
 
 router.get('/filter/getFilterNames',  filterController.getFilterNames);
-router.post('/filter/newFilterName',  filterController.newFilterName);
-router.delete('/filter/deleteFilterName',  filterController.deleteFilterName);
+router.post('/filter/newFilterName', authMiddleware,roleAuthMiddleware, filterController.newFilterName);
+router.delete('/filter/deleteFilterName', authMiddleware, roleAuthMiddleware,filterController.deleteFilterName);
 
 //--------------------------------
 router.get('/filter/getFilterValuesByFilterNameId',  filterController.getFilterValuesByFilterNameId);
 router.get('/filter/getFilterValuesByCategoryId',  filterController.getFilterValuesByCategoryId);
 router.post('/filter/newFilterValue',  filterController.newFilterValue);
-router.delete('/filter/deleteFilterValue',  filterController.deleteFilterValue);
-router.post('/filter/newFilterInstance',  filterController.newFilterInstance);
+router.delete('/filter/deleteFilterValue', authMiddleware,roleAuthMiddleware, filterController.deleteFilterValue);
+router.post('/filter/newFilterInstance', authMiddleware, roleAuthMiddleware, filterController.newFilterInstance);
 
 module.exports = router

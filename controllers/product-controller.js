@@ -85,6 +85,7 @@ class ProductController {
             return ApiError.BadRequest('Не корректный запрос')
         }
         const offset = data.limit * (data.page - 1)
+        console.log(data.limit , offset)
         try {
             const product = await Product.findAndCountAll({ limit: data.limit, offset: offset });
 
@@ -96,7 +97,7 @@ class ProductController {
 
     async getFilteredProducts(req, res, next) {
         const data = req.body
-        console.log(data)
+        console.log('data ',data)
         if (!data.filterRequest.categoryId) {
             return ApiError.BadRequest('Не корректный запрос')
         }

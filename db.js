@@ -7,6 +7,6 @@ module.exports = new Sequelize(
     {
         dialect: process.env.BD_DIALECT,
         host: process.env.DB_HOST,
-        //port: process.env.DB_PORT
+        port: process.env.DB_PORT
     }
 )
