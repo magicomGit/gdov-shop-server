@@ -43,5 +43,6 @@ router.get('/filter/getFilterValuesByCategoryId',  filterController.getFilterVal
 router.post('/filter/newFilterValue',  filterController.newFilterValue);
 router.delete('/filter/deleteFilterValue', authMiddleware,roleAuthMiddleware, filterController.deleteFilterValue);
 router.post('/filter/newFilterInstance', authMiddleware, roleAuthMiddleware, filterController.newFilterInstance);
+//-------------------------------------------------------------------------------------------------
 
 module.exports = router

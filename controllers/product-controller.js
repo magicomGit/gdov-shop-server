@@ -87,7 +87,7 @@ class ProductController {
         const offset = data.limit * (data.page - 1)
         console.log(data.limit , offset)
         try {
-            const product = await Product.findAndCountAll({ limit: data.limit, offset: offset });
+            const product = await Product.findAndCountAll({offset: offset,  limit: Number(data.limit) });
 
             return res.json(product);
         } catch (e) {

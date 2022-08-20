@@ -12,80 +12,79 @@ const User = sequelize.define('User', {
     role: { type: DataTypes.STRING,defaultValue: 'GUEST' },
 })
 
-const Role = sequelize.define('Role', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    value: { type: DataTypes.STRING },
-    description: { type: DataTypes.STRING },    
-}, { timestamps: false })
 
-const Comment = sequelize.define('Comment', {
+
+const Comment = sequelize.define('comment', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     content: { type: DataTypes.TEXT },
     userName: { type: DataTypes.STRING },
-    productId: { type: DataTypes.INTEGER },
+    
 })
 
-const Product = sequelize.define('Product', {
+const Product = sequelize.define('product', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },    
-    name: { type: DataTypes.STRING, unique: true },            
-    category: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING, unique: true },   
     brand: { type: DataTypes.STRING },
     picture: { type: DataTypes.STRING },
     price: { type: DataTypes.INTEGER, defaultValue: 0 },
     rating: { type: DataTypes.INTEGER, defaultValue: 0 },    
 })
 
-// const Basket = sequelize.define('Basket', {
-//     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },    
-//     userId: { type: DataTypes.INTEGER },
-//     productId: { type: DataTypes.ARRAY(DataTypes.INTEGER) },    
-       
-// }, { timestamps: false })
 
-const Category = sequelize.define('Category', {
+
+const Category = sequelize.define('category', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING },    
 }, { timestamps: false })
 
-const Brand = sequelize.define('Brand', {
+const Brand = sequelize.define('brand', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING },    
 }, { timestamps: false })
 
-const FilterName = sequelize.define('FilterName',{
+const FilterName = sequelize.define('filterName',{
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING },
-    categoryId: { type: DataTypes.INTEGER },    
+    name: { type: DataTypes.STRING },      
 }, { timestamps: false })
 
-const FilterValue = sequelize.define('FilterValue', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    categoryId: { type: DataTypes.INTEGER },
-    filterNameId: { type: DataTypes.INTEGER }, 
+const FilterValue = sequelize.define('filterValue', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },   
     filterName: { type: DataTypes.STRING },       
     value: { type: DataTypes.STRING },   
         
 }, { timestamps: false })
 
-const FilterInstance = sequelize.define('FilterInstance', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    productId: { type: DataTypes.INTEGER },
-    categoryId: { type: DataTypes.INTEGER },
-    filterNameId: { type: DataTypes.INTEGER }, 
+const FilterInstance = sequelize.define('filterInstance', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },    
     filterName: { type: DataTypes.STRING },       
     value: { type: DataTypes.STRING },          
 }, { timestamps: false })
 
-const Property = sequelize.define('Property', {
+const Property = sequelize.define('property', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING },          
-    value: { type: DataTypes.STRING },   
-    productId: { type: DataTypes.INTEGER }, 
+    value: { type: DataTypes.STRING },      
 }, { timestamps: false })
 
+
+Product.hasMany(FilterInstance)
+
+
+Category.hasMany(Product)
+
+Category.hasMany(FilterName,  { onDelete: "cascade"})
+Category.hasMany(FilterValue,  { onDelete: "cascade"})
+
+FilterName.hasMany(FilterValue ,  { onDelete: "cascade"})
+
+
+
+
+
+
+
 module.exports = {
-    User,
-    Role,
+    User,    
     Comment,
     Product,    
     Category,

@@ -1,6 +1,6 @@
 const FilterInstanceDTO = require('../dtos/FilterInstanceDTO');
 const ApiError = require('../exceptions/api-error');
-const { ProperyTemplate, FilterName, FilterValue, FilterInstance } = require('../models/models')
+const { ProperyTemplate, FilterName, FilterValue, FilterInstance, Category } = require('../models/models')
 
 class FilterController {
 
@@ -22,17 +22,25 @@ class FilterController {
 
     async newFilterName(req, res, next) {
         const data = req.body;
-        console.log(data.filterName.name)
+        //console.log(data.filterName.categoryId)
         if (data.filterName.name.length < 2) {
             return ApiError.BadRequest('В запросе не достаточно символов')
         }
 
+        
         try {
-            const filterName = await FilterName.create({
-                name: data.filterName.name,
-                categoryId: data.filterName.categoryId
-            });
-            return res.json(filterName);
+            Category.findByPk(data.filterName.categoryId).then(category =>{
+                if(!category) return console.log("category not found");
+                const filterName = category.createFilterName({
+                    name: data.filterName.name,
+                    categoryId: data.filterName.categoryId
+                });
+                return res.json(filterName);
+            })
+            // const filterName = await FilterName.create({
+            //     name: data.filterName.name,
+            //     categoryId: data.filterName.categoryId
+            // });
         } catch (e) {
             next(e);
         }
