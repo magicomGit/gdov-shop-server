@@ -23,8 +23,7 @@ const Comment = sequelize.define('comment', {
 
 const Product = sequelize.define('product', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },    
-    name: { type: DataTypes.STRING, unique: true },   
-    brand: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING, unique: true },       
     picture: { type: DataTypes.STRING },
     price: { type: DataTypes.INTEGER, defaultValue: 0 },
     rating: { type: DataTypes.INTEGER, defaultValue: 0 },    
@@ -69,17 +68,15 @@ const Property = sequelize.define('property', {
 
 Product.hasMany(FilterInstance)
 
-
 Category.hasMany(Product)
-
 Category.hasMany(FilterName,  { onDelete: "cascade"})
 Category.hasMany(FilterValue,  { onDelete: "cascade"})
+Category.hasMany(FilterInstance,  { onDelete: "cascade"})
+
+Brand.hasMany(Product)
 
 FilterName.hasMany(FilterValue ,  { onDelete: "cascade"})
-
-
-
-
+FilterName.hasMany(FilterInstance ,  { onDelete: "cascade"})
 
 
 

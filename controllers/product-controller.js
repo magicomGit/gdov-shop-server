@@ -3,9 +3,10 @@ const tokenService = require('../services/token-service');
 const userService = require('../services/user-service');
 const { validationResult } = require('express-validator');
 const ApiError = require('../exceptions/api-error');
-const { Category, Brand, Product, CategoryProperty, FilterName, FilterInstance } = require('../models/models')
+const { Category, Brand, Product, CategoryProperty, FilterName, FilterInstance, FilterValue } = require('../models/models')
 const uuid = require('uuid');
-const path = require('path')
+const path = require('path');
+const filterService = require('../services/filter-service');
 
 class ProductController {
 
@@ -85,9 +86,9 @@ class ProductController {
             return ApiError.BadRequest('Не корректный запрос')
         }
         const offset = data.limit * (data.page - 1)
-        console.log(data.limit , offset)
+        console.log(data.limit, offset)
         try {
-            const product = await Product.findAndCountAll({offset: offset,  limit: Number(data.limit) });
+            const product = await Product.findAndCountAll({ offset: offset, limit: Number(data.limit) });
 
             return res.json(product);
         } catch (e) {
@@ -97,82 +98,49 @@ class ProductController {
 
     async getFilteredProducts(req, res, next) {
         const data = req.body
-        console.log('data ',data)
         if (!data.filterRequest.categoryId) {
             return ApiError.BadRequest('Не корректный запрос')
         }
         const categoryId = data.filterRequest.categoryId
-        const category = await Category.findOne({where:{id: categoryId}})
 
-        if (!category) {
-            return ApiError.BadRequest('Не корректный запрос')
-        }
-
+        let filterValueQuantities=[]
         try {
+            const filterInstances = await FilterInstance.findAll({ where: { categoryId: categoryId } })
+            const categoryFilterValues = await FilterValue.findAll({ where: { categoryId: categoryId } });
 
             if (data.filterRequest.filters.length > 0) {
-                //const categoryId = data.filterRequest.categoryId
+                const checkedFilterValues = data.filterRequest.filters
 
 
-                let filterInstances = await FilterInstance.findAll({ where: { categoryId: categoryId } })
 
-                let groupFilterInstances = {};
 
-                let filteredId = []
-                let filteredIdGroup = []
-                let filteredGroup = []
+                 filterValueQuantities = filterService.getFilterValueQuantities(
+                    filterInstances, checkedFilterValues, categoryFilterValues)//----------------
+                
 
-                data.filterRequest.filters.map(filterValue => {
-                    if (!groupFilterInstances[filterValue.filterNameId]) {
-                        groupFilterInstances[filterValue.filterNameId] = [filterValue.value]
-                    } else {
-                        groupFilterInstances[filterValue.filterNameId].push(filterValue.value)
+                let filteredProductId = []
+                
 
-                    }
+                const filterInstancesFiltered = filterService.getFilterdInstances(filterInstances, checkedFilterValues)
+
+                
+                filterInstancesFiltered.map(instance => {
+                    filteredProductId.push(instance.productId)
                 })
-                console.log(groupFilterInstances)
-                for (var key in groupFilterInstances) {
-                    //console.log(key, groupFilterInstances[key])
-                    groupFilterInstances[key].map(groupItem => {
-                        //console.log('key- '+key, ' groupItem- '+ groupItem)
-                        filterInstances.map(filterInstance => {
 
-                            if (key == filterInstance.filterNameId &&
-                                groupItem === filterInstance.value) {
-                                filteredIdGroup.push(filterInstance.productId)
-                            }
-                        })
-                    })
-                    filteredIdGroup = [...new Set(filteredIdGroup)]
-
-                    filteredIdGroup.map(id => {
-                        filterInstances.map(instance => {
-                            if (instance.productId === id) {
-                                filteredGroup.push(instance)
-
-                            }
-
-                        })
-
-                    })
-                    filterInstances = filteredGroup
-                    filteredGroup = []
-                    filteredIdGroup = []
-
-                }
-                filterInstances.map(instance => {
-                    filteredId.push(instance.productId)
-                })
-                filteredId = [...new Set(filteredId)]
+                filteredProductId = [...new Set(filteredProductId)] //убираем дубликаты filteredId
 
 
 
-                const products = await Product.findAll({ where: { id: filteredId } })
-                return res.json(products);
-            } else {
+                const products = await Product.findAll({ where: { id: filteredProductId } })
+                return res.json({products, filterValueQuantities});
+            } else {                
+                const products = await Product.findAll({ where: { categoryId: categoryId } })
 
-                const products = await Product.findAll({ where: { category: category.name } })
-                return res.json(products);
+                const filterValuesDTOs = filterService.getFilterValuesDTOs(categoryFilterValues)
+                filterValueQuantities = filterService.getAllFilterValueQuantities(filterValuesDTOs, filterInstances)
+
+                return res.json({products, filterValueQuantities});
             }
 
 
@@ -196,13 +164,14 @@ class ProductController {
                 return ApiError.BadRequest('Не найдено изображение продукта')
             }
 
-
+            console.log(product)
 
             const newProduct = await Product.create({
-                name: product.name, category: product.category, brand: product.brand,
+                name: product.name, categoryId: product.categoryId, brandId: product.brandId,
                 price: product.price, picture: product.picture
             });
             return res.json(newProduct);
+            // return ;
         } catch (e) {
             next(e);
         }
