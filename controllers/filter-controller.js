@@ -1,4 +1,3 @@
-const FilterInstanceDTO = require('../dtos/FilterInstanceDTO');
 const ApiError = require('../exceptions/api-error');
 const { ProperyTemplate, FilterName, FilterValue, FilterInstance, Category } = require('../models/models')
 
@@ -114,18 +113,10 @@ class FilterController {
     }
 
     async newFilterInstance(req, res, next) {
-        const data = req.body;
-        const productId = data.filterInstance.productId
-        const filterInstanceDTO = []
-        console.log(data)
-
-        data.filterInstance.filterValues.map(filterValue =>{
-            filterInstanceDTO.push(new FilterInstanceDTO(productId, filterValue))
-        })
-
+        const data = req.body;        
         
         try {
-            const response = await FilterInstance.bulkCreate(filterInstanceDTO)
+            const response = await FilterInstance.bulkCreate(data.filterInstances)
 
             return res.json(response);
         } catch (e) {

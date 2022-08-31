@@ -1,7 +1,7 @@
 const sequelize = require('../db')
 const { DataTypes } = require('sequelize')
 
-const User = sequelize.define('User', {
+const User = sequelize.define('user', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     email: { type: DataTypes.STRING, unique: true },
     name: { type: DataTypes.STRING, unique: true },
@@ -34,6 +34,7 @@ const Product = sequelize.define('product', {
 const Category = sequelize.define('category', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING },    
+    picture: { type: DataTypes.STRING },    
 }, { timestamps: false })
 
 const Brand = sequelize.define('brand', {
@@ -65,10 +66,13 @@ const Property = sequelize.define('property', {
     value: { type: DataTypes.STRING },      
 }, { timestamps: false })
 
+User.hasMany(Comment )
 
-Product.hasMany(FilterInstance)
+Product.hasMany(FilterInstance ,  { onDelete: "cascade"})
+Product.hasMany(Property ,  { onDelete: "cascade"})
+Product.hasMany(Comment ,  { onDelete: "cascade"})
 
-Category.hasMany(Product)
+Category.hasMany(Product,  { onDelete: "cascade"})
 Category.hasMany(FilterName,  { onDelete: "cascade"})
 Category.hasMany(FilterValue,  { onDelete: "cascade"})
 Category.hasMany(FilterInstance,  { onDelete: "cascade"})

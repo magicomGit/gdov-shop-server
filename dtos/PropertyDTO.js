@@ -1,18 +1,17 @@
-module.exports = class FilterInstanceDTO {        
+module.exports = class ProprtyDTO {        
     id;
-    productId;
+    productQty;
     categoryId;
     filterNameId;    
     filterName;    
     value;   
 
-    constructor(productId, filterValue ){        
-        this.id = 0
-        this.productId = productId
+    constructor(productQty, filterValue ){        
+        this.id = filterValue.id
         this.categoryId = filterValue.categoryId
         this.filterNameId = filterValue.filterNameId
         this.filterName = filterValue.filterName
         this.value = filterValue.value
-        
+        this.productQty = productQty        
     }
 }

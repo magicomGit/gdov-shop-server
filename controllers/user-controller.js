@@ -3,6 +3,7 @@ const tokenService = require('../services/token-service');
 const userService = require('../services/user-service');
 const { validationResult } = require('express-validator');
 const ApiError = require('../exceptions/api-error');
+const axios =  require("axios");
 
 class UserController {
     async register(req, res, next) {
@@ -19,6 +20,28 @@ class UserController {
             res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })//30 дней
 
             return res.json(userData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async yandexAuth(req, res, next) {
+        try {
+      
+            
+            const headers = {
+                'Content-Type': 'application/json'    
+              };
+            const token = 'vk1.a.uzGQudAe_VXCmgmsc-2XSDdE2TqWEeFwlZftRa2A8Di3I2ruIt9_PZbEx2V4rWoyHDWHBXEdOnfd3cxxS5jt9ecDW4jlD9ixdhhfvngY1luk-eeVB_pAtyzPGGRLNTaSsfXz4yBYzpFAUd8LuVUK1atBlK0LL1kfyvh7gg_O8cJBxdkKIT5GhM4RnFW7Hnuw'
+            // const formData = new FormData()
+            // formData.append('access_token', token )
+            // formData.append('v', '5.131' )
+
+            const getUserDataParam = {access_token: token, v:'5.131'}
+            const resp = await axios.post('https://api.vk.com/method/users.get',getUserDataParam, headers)
+
+            console.log(resp)
+            return 
         } catch (e) {
             next(e);
         }
@@ -57,7 +80,7 @@ class UserController {
         try {
             const activationLink = req.query;
             // const {id} = req.id;
-            
+
             await userService.activate(activationLink);
             return res.redirect(process.env.CLIENT_URL);
         } catch (e) {
@@ -71,7 +94,7 @@ class UserController {
             const accessToken = tokenHeader.split(' ')[1];
             const { refreshToken } = req.cookies;
 
-            
+
 
             const userData = await userService.refresh(refreshToken, accessToken);
             if (!userData.isAuth) {
@@ -89,7 +112,7 @@ class UserController {
     }
 
     async getUsers(req, res, next) {
-        
+
         try {
 
             const users = await userService.getAllUsers(req.query.l);

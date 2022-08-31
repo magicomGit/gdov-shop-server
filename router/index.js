@@ -2,6 +2,7 @@ const Router = require('express').Router;
 const userController = require('../controllers/user-controller');
 const productController = require('../controllers/product-controller');
 const filterController = require('../controllers/filter-controller');
+const commentController = require('../controllers/comment-controller');
 
 const router = new Router();
 const {body} = require('express-validator');
@@ -14,35 +15,42 @@ router.post('/account/register',
     body('password').isLength({min: 3, max: 32}),
     userController.register
 );
+router.post('/account/yandexAuth', userController.yandexAuth);
 router.post('/account/login', userController.login);
 router.post('/account/logout', userController.logout);
 router.get('/account/activate', userController.activate);
 router.get('/account/refresh', userController.refresh);
-router.get('/account/users',  userController.getUsers);
+router.get('/account/users',  roleAuthMiddleware, userController.getUsers);
 //--------------------------------
 router.get('/product/getCategories',  productController.getCategories);
-router.post('/product/newCategory', authMiddleware, roleAuthMiddleware, productController.newCategory);
-router.delete('/product/deleteCategory', authMiddleware, roleAuthMiddleware,productController.deleteCategory);
+router.post('/product/newCategory',  roleAuthMiddleware, productController.newCategory);
+router.delete('/product/deleteCategory', roleAuthMiddleware,productController.deleteCategory);
 
 router.get('/product/getBrands',  productController.getBrands);
-router.post('/product/newBrand', authMiddleware,roleAuthMiddleware, productController.newBrand);
-router.delete('/product/deleteBrand',authMiddleware, roleAuthMiddleware, productController.deleteBrand);
+router.post('/product/newBrand', roleAuthMiddleware, productController.newBrand);
+router.delete('/product/deleteBrand', roleAuthMiddleware, productController.deleteBrand);
 
 router.get('/product/getProducts',  productController.getProducts);
-router.post('/product/newProduct',  productController.newProduct);
-router.delete('/product/deleteProduct', authMiddleware, roleAuthMiddleware,productController.deleteProduct);
+router.post('/product/newProduct',  roleAuthMiddleware, productController.newProduct );
+router.delete('/product/deleteProduct', roleAuthMiddleware, productController.deleteProduct);
 router.post('/product/getFilteredProducts',  productController.getFilteredProducts);
+router.put('/product/newProperty',  roleAuthMiddleware, productController.newProperty);
 
 router.get('/filter/getFilterNames',  filterController.getFilterNames);
-router.post('/filter/newFilterName', authMiddleware,roleAuthMiddleware, filterController.newFilterName);
-router.delete('/filter/deleteFilterName', authMiddleware, roleAuthMiddleware,filterController.deleteFilterName);
+router.post('/filter/newFilterName',roleAuthMiddleware, filterController.newFilterName);
+router.delete('/filter/deleteFilterName', roleAuthMiddleware,filterController.deleteFilterName);
 
 //--------------------------------
 router.get('/filter/getFilterValuesByFilterNameId',  filterController.getFilterValuesByFilterNameId);
 router.get('/filter/getFilterValuesByCategoryId',  filterController.getFilterValuesByCategoryId);
-router.post('/filter/newFilterValue',  filterController.newFilterValue);
-router.delete('/filter/deleteFilterValue', authMiddleware,roleAuthMiddleware, filterController.deleteFilterValue);
-router.post('/filter/newFilterInstance', authMiddleware, roleAuthMiddleware, filterController.newFilterInstance);
+router.post('/filter/newFilterValue',  roleAuthMiddleware, filterController.newFilterValue);
+router.delete('/filter/deleteFilterValue', roleAuthMiddleware, filterController.deleteFilterValue);
+router.post('/filter/newFilterInstance',  roleAuthMiddleware, filterController.newFilterInstance);
 //-------------------------------------------------------------------------------------------------
+router.post('/product/uploadImg',  productController.uploadImg);
+router.get('/product/getProduct',  productController.getProduct);
+//-------------------------------------------------------------------------------------------------
+router.get('/comment/getComments',  commentController.getComments);
+router.put('/comment/newComment', authMiddleware, commentController.newComment);
 
 module.exports = router

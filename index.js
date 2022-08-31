@@ -15,18 +15,18 @@ app.use(express.json());
 app.use(express.static(path.resolve(__dirname, 'static')));
 app.use(fileUpload({}));
 app.use(cookieParser());
-app.use(cors({
-    credentials: true,
+app.use(cors(
+    {credentials: true,
     origin: process.env.CLIENT_URL,
-    methods: ['GET','POST','DELETE','PUT'],//,'DELETE','UPDATE','PUT','PATCH'
-    
-}));
+    methods: ['GET','POST','DELETE','PUT'],}
+));
 app.use('/', router);
 app.use(errorMiddleware);
 
 const start = async () => {
     try {
         await sequelize.authenticate()
+        
         //await sequelize.sync({alter:true})
         app.listen(PORT, () => console.log(`Server started on PORT = ${PORT}`))
     } catch (e) {

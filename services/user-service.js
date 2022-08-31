@@ -62,29 +62,25 @@ class UserService {
 
     async refresh(refreshToken, accessToken) {
         if (!refreshToken || !accessToken) {
-            return { accessToken: null, isAuth: false, message: 'Токен клиента отсутствует' }
-            //throw ApiError.BadRequest({message: 'Токен клиента отсутствует'});
+            return { accessToken: null, isAuth: false, message: 'Токен клиента отсутствует' }           
         }
 
         //валидируем refreshToken от клинета
         if (!tokenService.validateRefreshToken(refreshToken)) {
-            return { accessToken: null, isAuth: false, message: 'RefreshToken не прошел проверку' }
-            //throw ApiError.BadRequest({message: 'RefreshToken не прошел проверку'});
+            return { accessToken: null, isAuth: false, message: 'RefreshToken не прошел проверку' }            
         }
         
         //payload accessToken от клиента
         const accessPayload = jwt.decode(accessToken)
         if (!accessPayload) {
-            return { accessToken: null, isAuth: false, message: 'Не корректный AccessToken' }
-            //throw ApiError.BadRequest({message: 'не корректный AccessToken'});
+            return { accessToken: null, isAuth: false, message: 'Не корректный AccessToken' }            
         }
         
         //тянем из БД  refreshToken по Id пользователя из payload accessToken от клиента и сравниваем
         const refreshTokenFromDb = await tokenService.getRefreshTokenByUserId(accessPayload.id);
         
         if (refreshToken !== refreshTokenFromDb) {
-            return { accessToken: null, message: 'RefreshToken не распознан' }
-            //throw ApiError.BadRequest({message: 'RefreshToken не распознан'});
+            return { accessToken: null, message: 'RefreshToken не распознан' }            
         }
 
         //генерим новую пару  токенов
