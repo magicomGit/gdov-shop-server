@@ -32,7 +32,7 @@ class UserController {
             const headers = {
                 'Content-Type': 'application/json'    
               };
-            const token = 'vk1.a.uzGQudAe_VXCmgmsc-2XSDdE2TqWEeFwlZftRa2A8Di3I2ruIt9_PZbEx2V4rWoyHDWHBXEdOnfd3cxxS5jt9ecDW4jlD9ixdhhfvngY1luk-eeVB_pAtyzPGGRLNTaSsfXz4yBYzpFAUd8LuVUK1atBlK0LL1kfyvh7gg_O8cJBxdkKIT5GhM4RnFW7Hnuw'
+            const token = 'vk1.a.h2_YaH5O-4Wb4NaqQVHomuJBKR_dm1rtEKBFfwvF-vZYafd0WPVChexPP0893_osxbBaZ-F50jzInz3Pkqs_67ePIzhKbd-gc7L021tyfQdAq8llavz_HXhJ03q45RwBgMG0I8iA-yc12VjM9VVmsW16IY_8UWvnlYWD71XZpGUhYw9Oidesk9LvFPDiN7b0'
             // const formData = new FormData()
             // formData.append('access_token', token )
             // formData.append('v', '5.131' )
