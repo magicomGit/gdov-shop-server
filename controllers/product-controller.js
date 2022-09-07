@@ -4,7 +4,8 @@ const uuid = require('uuid');
 const path = require('path');
 const filterService = require('../services/filter-service');
 const FilterInstanceDTO = require('../dtos/FilterInstanceDTO');
-const { Sequelize } = require('sequelize')
+const { Sequelize, Op } = require('sequelize')
+
 
 class ProductController {
 
@@ -80,15 +81,15 @@ class ProductController {
     //-------------- Product -----------------------------------------------------
     async getProducts(req, res, next) {
         const data = req.query
+        console.log(data)
         if (!data.limit || !data.page) {
             return ApiError.BadRequest('Не корректный запрос')
         }
         const offset = data.limit * (data.page - 1)
-        console.log(data.limit, offset)
+        
         try {
-            const product = await Product.findAndCountAll({ offset: offset, limit: Number(data.limit) });
-
-            return res.json(product);
+            const products = await Product.findAndCountAll({ offset: offset, limit: Number(data.limit) });
+            return res.json(products);
         } catch (e) {
             next(e);
         }
@@ -99,11 +100,26 @@ class ProductController {
         if (!data.filterRequest.categoryId) {
             return ApiError.BadRequest('Не корректный запрос')
         }
+        if (!data.filterRequest.limit || !data.filterRequest.page) {
+            return ApiError.BadRequest('Не корректный запрос')
+        }
+        //------------------------
+        const offset = data.filterRequest.limit * (data.filterRequest.page - 1)
+        const limit = data.filterRequest.limit
+        //--------------------
         const categoryId = data.filterRequest.categoryId
-
+        
+        //запрос на id продуктов отфильтрованных по цене
+        const ids = []
+        const productIds = await Product.findAll({where:
+            {price:{ [Op.and]:[{[Op.gte]:data.filterRequest.priceRange[0]},{[Op.lte]:data.filterRequest.priceRange[1]}]}},
+            attributes: ['id']})
+            productIds.map(product=> ids.push(product.id))
+            
+        //--------------------------------------------
         let filterValueQuantities = []
         try {
-            const filterInstances = await FilterInstance.findAll({ where: { categoryId: categoryId } })
+            const filterInstances = await FilterInstance.findAll({ where: {[Op.and]:[{categoryId: categoryId}, {productId:ids}]  } })
             const categoryFilterValues = await FilterValue.findAll({ where: { categoryId: categoryId } });
 
             if (data.filterRequest.filters.length > 0) {
@@ -128,36 +144,32 @@ class ProductController {
 
                 filteredProductId = [...new Set(filteredProductId)] //убираем дубликаты filteredId
 
+                
+                let products = await Product.findAll({where: { id: filteredProductId }, 
+                    include: [Property,{model:Comment, attributes: ['id']}]
+                })
 
-
-                //const products = await Product.findAll({ where: { id: filteredProductId }, include: Property })
-                const products = await Product.findAll({where: { categoryId: categoryId }, 
-                    include: [Property,{model:Comment, attributes: ['id']}]})
-
-                return res.json({ products, filterValueQuantities });
+                const count = products.length
+                products = products.filter((product, index)=> index >= offset && index < offset + limit)
+                return res.json({ products, filterValueQuantities, count });
             } else {
-                const products = await Product.findAll({
-                    where: { categoryId: categoryId }, 
-                    include: [
-                        Property,
-                        //{model: Comment, attributes: [[Sequelize.fn('COUNT', Sequelize.col('comments.id'))]]}
-                        {model:Comment, attributes: ['id']}   
-                    ]   
-                })//.then(products=> products.map(product=> product.comments = product.comments.length))   
+                let products = await Product.findAll({where: {[Op.and]:[{ 
+                    categoryId: categoryId, 
+                    price:{ [Op.and]:[{[Op.gte]:data.filterRequest.priceRange[0]},{[Op.lte]:data.filterRequest.priceRange[1]}]}                    
+                }]}, 
+                    include: [Property,{model:Comment, attributes: ['id']}]  // массив id комментов переделать на количество комментов              
+                })
                 
  
-                // const products = await sequelize.query(`SELECT products.name,  COUNT(comments.id) AS commentCnt
-                // FROM products                             
-                // LEFT JOIN comments ON comments.productId = products.id
-                // WHERE categoryId = ${categoryId} 
-                // GROUP BY products.id
-                // `)
-                //include:{model:Property, where:{value:'6 ГБ'}} })
+                
+                const count = products.length// количество отфильтрованных продуктов для пагинации
+                products = products.filter((product, index)=> index >= offset && index < offset + limit)
                 
                 const filterValuesDTOs = filterService.getFilterValuesDTOs(categoryFilterValues)
+                //набор фильтров для категории с количеством подходящих моделей продукта
                 filterValueQuantities = filterService.getAllFilterValueQuantities(filterValuesDTOs, filterInstances)
 
-                return res.json({ products, filterValueQuantities });
+                return res.json({ products, filterValueQuantities, count});
             }
 
 
@@ -172,7 +184,7 @@ class ProductController {
         try {
 
             const data = req.body;
-            //console.log('------------------------------------',data)
+            console.log('------------------------------------',data)
 
             const newProduct = await Product.create(data.product)
                 .then(product => {
@@ -188,7 +200,7 @@ class ProductController {
 
                 })
 
-            return res.json(newProduct);
+            return res.json('newProduct');
             //return ;
         } catch (e) {
             next(e);

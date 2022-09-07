@@ -31,7 +31,7 @@ router.post('/product/newBrand', roleAuthMiddleware, productController.newBrand)
 router.delete('/product/deleteBrand', roleAuthMiddleware, productController.deleteBrand);
 
 router.get('/product/getProducts',  productController.getProducts);
-router.post('/product/newProduct',  roleAuthMiddleware, productController.newProduct );
+router.post('/product/newProduct',   productController.newProduct );
 router.delete('/product/deleteProduct', roleAuthMiddleware, productController.deleteProduct);
 router.post('/product/getFilteredProducts',  productController.getFilteredProducts);
 router.put('/product/newProperty',  roleAuthMiddleware, productController.newProperty);

@@ -3,7 +3,7 @@ const tokenService = require('../services/token-service');
 const userService = require('../services/user-service');
 const { validationResult } = require('express-validator');
 const ApiError = require('../exceptions/api-error');
-const axios =  require("axios");
+const axios = require("axios");
 
 class UserController {
     async register(req, res, next) {
@@ -27,21 +27,53 @@ class UserController {
 
     async yandexAuth(req, res, next) {
         try {
-      
-            
+
+
             const headers = {
-                'Content-Type': 'application/json'    
-              };
+                //'Content-Type': 'multipart/form-data',
+                'Content-Type': 'multipart/form-data',
+
+            };
             const token = 'vk1.a.h2_YaH5O-4Wb4NaqQVHomuJBKR_dm1rtEKBFfwvF-vZYafd0WPVChexPP0893_osxbBaZ-F50jzInz3Pkqs_67ePIzhKbd-gc7L021tyfQdAq8llavz_HXhJ03q45RwBgMG0I8iA-yc12VjM9VVmsW16IY_8UWvnlYWD71XZpGUhYw9Oidesk9LvFPDiN7b0'
-            // const formData = new FormData()
-            // formData.append('access_token', token )
-            // formData.append('v', '5.131' )
 
-            const getUserDataParam = {access_token: token, v:'5.131'}
-            const resp = await axios.post('https://api.vk.com/method/users.get',getUserDataParam, headers)
+            var FormData = require('form-data');
+            const formData = new FormData()
+            formData.append('grant_type', 'authorization_code')
+            formData.append('code', '4050969')
+            formData.append('client_id', '74294c854986418fb0cbb047602f071b')
+            formData.append('client_secret', 'fce0aff9db5c4dc8b198d44eaa2f2f5b')
 
-            console.log(resp)
-            return 
+            const getUserDataParam = { access_token: token, v: '5.131' }
+            const resp = await axios.post('https://oauth.yandex.ru', formData, headers)
+
+            console.log(resp.data)
+            return res.json(resp.data)
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async vkAuth(req, res, next) {
+        try {
+
+
+            const headers = {
+                //'Content-Type': 'multipart/form-data',
+                'Content-Type': 'multipart/form-data',
+
+            };
+            const token = 'vk1.a.h2_YaH5O-4Wb4NaqQVHomuJBKR_dm1rtEKBFfwvF-vZYafd0WPVChexPP0893_osxbBaZ-F50jzInz3Pkqs_67ePIzhKbd-gc7L021tyfQdAq8llavz_HXhJ03q45RwBgMG0I8iA-yc12VjM9VVmsW16IY_8UWvnlYWD71XZpGUhYw9Oidesk9LvFPDiN7b0'
+
+            var FormData = require('form-data');
+            const formData = new FormData()
+            formData.append('access_token', token)
+            formData.append('v', '5.131')
+
+            const getUserDataParam = { access_token: token, v: '5.131' }
+            const resp = await axios.post('https://api.vk.com/method/users.get', formData, headers)
+
+            console.log(resp.data)
+            return res.json(resp.data)
         } catch (e) {
             next(e);
         }
