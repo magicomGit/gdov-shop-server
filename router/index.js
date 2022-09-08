@@ -15,7 +15,7 @@ router.post('/account/register',
     body('password').isLength({min: 3, max: 32}),
     userController.register
 );
-router.post('/account/yandexAuth', userController.yandexAuth);
+router.post('/account/vkAuth', userController.vkAuth);
 router.post('/account/login', userController.login);
 router.post('/account/logout', userController.logout);
 router.get('/account/activate', userController.activate);
@@ -52,5 +52,7 @@ router.get('/product/getProduct',  productController.getProduct);
 //-------------------------------------------------------------------------------------------------
 router.get('/comment/getComments',  commentController.getComments);
 router.put('/comment/newComment', authMiddleware, commentController.newComment);
+router.put('/comment/newRating', authMiddleware, commentController.newRating);
+router.get('/comment/getRating', authMiddleware, commentController.getRating);
 
 module.exports = router

@@ -16,16 +16,48 @@ class UserService {
 
         const hashPassword = await bcrypt.hash(password, 3);
         const link = uuid.v4()
-        const user = await User.create({ email: email, name: email, password: hashPassword, confirmLink: link, confirmedEmail: false })
+        const user = await User.create({ email: email, firstName: email, password: hashPassword, confirmLink: link, emailConfirmed: false })
         const confirmLink = process.env.API_URL+'/account/activate?id='+user.id+'&link='+link; // v34fa-asfasf-142saf-sa-asf
         await mailService.sendActivationMail(email, confirmLink);
 
-        const userDto = new UserDto(user); // Id, Email, ConfirmedEmail
+        const userDto = new UserDto(user); // id; email; firstName; role;confirmedEmail
 
         const tokens = tokenService.generateTokens({ ...userDto });
 
         return { ...tokens, ...userDto}
     }
+
+    async registerVK(email, firstName, lastName) {  
+        
+        const hashPassword = await bcrypt.hash('vk', 3);
+        
+        const user = await User.create({ email: email, firstName:firstName, lastName:lastName, password: hashPassword, confirmLink: 'link', confirmedEmail: true })
+        
+        const userDto = new UserDto(user); // id; email; firstName; role;confirmedEmail
+
+        const tokens = tokenService.generateTokens({ ...userDto });
+
+        return { ...tokens, ...userDto}
+    }
+
+    async loginVK(email) {
+       
+
+        const user = await User.findOne({ where: { email: email } })
+        if (!user) {
+            throw ApiError.BadRequest('Пользователь не найден')
+        }
+
+        const isPassEquals = await bcrypt.compare('vk', user.password);
+        if (!isPassEquals) {
+            throw ApiError.BadRequest('Неверный пароль');
+        }
+        const userDto = new UserDto(user);
+        const tokens = tokenService.generateTokens({ ...userDto });       
+        
+        return { ...tokens, ...userDto }
+    }
+
 
     async activate(activationLink) {
         const user = await User.findOne({where: {id:activationLink.id} })
@@ -38,12 +70,15 @@ class UserService {
     }
  
     async login(email, password) {
+        if (password ==='vk') {
+            throw ApiError.BadRequest('Неверный пароль')
+        }
 
         const user = await User.findOne({ where: { email: email } })
-
         if (!user) {
             throw ApiError.BadRequest('Пользователь не найден')
         }
+        
 
         const isPassEquals = await bcrypt.compare(password, user.password);
         if (!isPassEquals) {

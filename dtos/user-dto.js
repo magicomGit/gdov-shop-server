@@ -1,13 +1,16 @@
 module.exports = class UserDto {
     id;
     email;
-    confirmedEmail;
+    firstName;
+    role;
+    emailConfirmed;
 
     constructor(model) {
         
         this.email = model.email;
         this.id = model.id;
-        this.confirmedEmail = model.confirmedEmail;
+        this.firstName = model.firstName;
         this.role = model.role;
+        this.emailConfirmed = model.emailConfirmed;
     }
 }

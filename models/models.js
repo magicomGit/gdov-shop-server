@@ -4,12 +4,13 @@ const { DataTypes } = require('sequelize')
 const User = sequelize.define('user', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     email: { type: DataTypes.STRING, unique: true },
-    name: { type: DataTypes.STRING, unique: true },
+    firstName: { type: DataTypes.STRING },
+    lastName: { type: DataTypes.STRING },
     password: { type: DataTypes.STRING },
     confirmLink: { type: DataTypes.STRING },
     refreshToken: { type: DataTypes.STRING },
     emailConfirmed: { type: DataTypes.BOOLEAN },
-    role: { type: DataTypes.STRING,defaultValue: 'GUEST' },
+    role: { type: DataTypes.STRING, defaultValue: 'GUEST' },
 })
 
 
@@ -27,8 +28,14 @@ const Product = sequelize.define('product', {
     picture: { type: DataTypes.STRING },
     price: { type: DataTypes.INTEGER, defaultValue: 0 },
     rating: { type: DataTypes.INTEGER, defaultValue: 0 },    
+    ratingCount: { type: DataTypes.INTEGER, defaultValue: 0 },    
 })
 
+
+const Rating = sequelize.define('rating', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    rating: { type: DataTypes.INTEGER },    
+}, { timestamps: false })
 
 
 const Category = sequelize.define('category', {
@@ -67,10 +74,12 @@ const Property = sequelize.define('property', {
 }, { timestamps: false })
 
 User.hasMany(Comment )
+User.hasMany(Rating ,  { onDelete: "cascade"})
 
 Product.hasMany(FilterInstance ,  { onDelete: "cascade"})
 Product.hasMany(Property ,  { onDelete: "cascade"})
 Product.hasMany(Comment ,  { onDelete: "cascade"})
+Product.hasMany(Rating ,  { onDelete: "cascade"})
 
 Category.hasMany(Product,  { onDelete: "cascade"})
 Category.hasMany(FilterName,  { onDelete: "cascade"})
@@ -94,5 +103,5 @@ module.exports = {
     FilterName,
     FilterValue,
     FilterInstance,
-    
+    Rating
 }
