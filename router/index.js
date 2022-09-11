@@ -2,7 +2,7 @@ const Router = require('express').Router;
 const userController = require('../controllers/user-controller');
 const productController = require('../controllers/product-controller');
 const filterController = require('../controllers/filter-controller');
-const commentController = require('../controllers/comment-controller');
+//const commentController = require('../controllers/comment-controller');
 
 const router = new Router();
 const {body} = require('express-validator');
@@ -50,9 +50,9 @@ router.post('/filter/newFilterInstance',  roleAuthMiddleware, filterController.n
 router.post('/product/uploadImg',  productController.uploadImg);
 router.get('/product/getProduct',  productController.getProduct);
 //-------------------------------------------------------------------------------------------------
-router.get('/comment/getComments',  commentController.getComments);
-router.put('/comment/newComment', authMiddleware, commentController.newComment);
-router.put('/comment/newRating', authMiddleware, commentController.newRating);
-router.get('/comment/getRating', authMiddleware, commentController.getRating);
+router.get('/account/getComments',  userController.getComments);
+router.put('/account/newComment', authMiddleware, userController.newComment);
+router.put('/account/newRating', authMiddleware, userController.newRating);
+router.get('/account/getRating', authMiddleware, userController.getRating);
 
 module.exports = router
