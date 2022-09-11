@@ -74,7 +74,7 @@ class UserController {
             const resp = await axios.post('https://api.vk.com/method/users.get', formData, headers)
 
             if (resp.data.error) {
-                console.log(resp.data.error)
+                console.log(resp.data.error.error_msg)
                 console.log(vkToken)
                 return next(ApiError.BadRequest('Ошибка авторизации ВКонтакте'))
             }
