@@ -63,10 +63,11 @@ class UserService {
         const user = await User.findOne({where: {id:activationLink.id} })
         
         if (!user || user.confirmLink !==activationLink.link) {
-            throw ApiError.BadRequest('Неккоректная ссылка активации')
+            return false
         }
         user.emailConfirmed = true;
         await user.save();
+        return true
     }
  
     async login(email, password) {
