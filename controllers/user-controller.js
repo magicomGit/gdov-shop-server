@@ -76,7 +76,7 @@ class UserController {
             if (resp.data.error) {
                 console.log(resp.data.error.error_msg)
                 console.log(vkToken)
-                return next(ApiError.BadRequest('Ошибка авторизации ВКонтакте'))
+                return next(ApiError.BadRequest(resp.data.error.error_msg))
             }
 
             if (resp.data.response) {
