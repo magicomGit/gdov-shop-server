@@ -2,7 +2,7 @@ const ApiError = require('../exceptions/api-error');
 const { Comment, Rating, Product } = require('../models/models')
 const { Op } = require('sequelize')
 
-class CommentController {
+class CommentController{
 
     async getComments(req, res, next) {
         const data = req.query

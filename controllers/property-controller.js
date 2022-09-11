@@ -16,10 +16,7 @@ class PropertyController {
         } catch (e) {
             next(e);
         }
-    }
-
-   
-
+    }  
    
 }
 

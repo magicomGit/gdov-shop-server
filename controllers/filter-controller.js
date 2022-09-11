@@ -1,5 +1,5 @@
 const ApiError = require('../exceptions/api-error');
-const { ProperyTemplate, FilterName, FilterValue, FilterInstance, Category } = require('../models/models')
+const {  FilterName, FilterValue, FilterInstance, Category } = require('../models/models')
 
 class FilterController {
 
@@ -104,9 +104,9 @@ class FilterController {
     async deleteFilterValue(req, res, next) {
         const data = req.body;
         try {
-            const response = await ProperyTemplate.destroy({ where: { id: data.id } });
+            //const response = await ProperyTemplate.destroy({ where: { id: data.id } });
 
-            return res.json(response);
+            return res.json('response');
         } catch (e) {
             next(e);
         }

@@ -4,7 +4,7 @@ const uuid = require('uuid');
 const path = require('path');
 const filterService = require('../services/filter-service');
 const FilterInstanceDTO = require('../dtos/FilterInstanceDTO');
-const { Sequelize, Op } = require('sequelize')
+const {  Op } = require('sequelize')
 
 
 class ProductController {
