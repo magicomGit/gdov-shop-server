@@ -4,8 +4,6 @@ const { Op } = require('sequelize')
 
 class CommentController {
 
-
-
     async getComments(req, res, next) {
         const data = req.query
         if (!data.limit || !data.page) {
