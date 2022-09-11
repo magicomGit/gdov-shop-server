@@ -1,6 +1,6 @@
 const ApiError = require('../exceptions/api-error');
 const { Comment, Rating, Product } = require('../models/models')
-const { Sequelize, Op } = require('sequelize')
+const { Op } = require('sequelize')
 
 class CommentController {
 
