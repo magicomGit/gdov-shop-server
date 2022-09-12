@@ -1,9 +1,11 @@
 const ApiError = require('../exceptions/api-error');
 const { Comment, Rating, Product } = require('../models/models')
-const { Op } = require('sequelize')
+const {  Op } = require('sequelize')
 
-class CommentController{
+class Comment2Controller {   
 
+
+    
     async getComments(req, res, next) {
         const data = req.query
         if (!data.limit || !data.page) {
@@ -27,9 +29,9 @@ class CommentController{
         const data = req.query
         if (!data) {
             return ApiError.BadRequest('Не корректный запрос')
-        }  
-        
-        const {  userId, productId } = data     
+        }
+
+        const { userId, productId } = data
 
         try {
             const rating = await Rating.findOne({ where: { [Op.and]: [{ userId: userId }, { productId: productId }] } })
@@ -69,9 +71,9 @@ class CommentController{
 
         try {
             const oldRating = await Rating.findOne({ where: { [Op.and]: [{ userId: userId }, { productId: productId }] } })
-            const product =  await Product.findOne({where:{id:productId}})
+            const product = await Product.findOne({ where: { id: productId } })
             if (oldRating) {
-                product.rating = product.rating - oldRating.rating +  rating
+                product.rating = product.rating - oldRating.rating + rating
                 oldRating.rating = rating
                 await oldRating.save()
                 await product.save()
@@ -79,16 +81,16 @@ class CommentController{
             } else {
                 const newRating = await Rating.create({ id: 0, rating, userId, productId })
                 product.rating = product.rating + rating
-                product.ratingCount ++
+                product.ratingCount++
                 await product.save()
 
-                const productRating = (product.rating/product.ratingCount).toFixed(1)
-                return res.json({userRating: newRating.rating, productRating:productRating})
+                const productRating = (product.rating / product.ratingCount).toFixed(1)
+                return res.json({ userRating: newRating.rating, productRating: productRating })
             }
-            const productRating = (product.rating/product.ratingCount).toFixed(1)
+            const productRating = (product.rating / product.ratingCount).toFixed(1)
 
-            
-            return res.json({userRating: oldRating.rating, productRating:productRating})
+
+            return res.json({ userRating: oldRating.rating, productRating: productRating })
         } catch (e) {
             next(e);
         }
@@ -98,9 +100,9 @@ class CommentController{
         const data = req.query
         if (!data) {
             return ApiError.BadRequest('Не корректный запрос')
-        }  
-        
-        const {  userId, productId } = data     
+        }
+
+        const { userId, productId } = data
 
         try {
             const rating = await Rating.findOne({ where: { [Op.and]: [{ userId: userId }, { productId: productId }] } })
@@ -114,10 +116,7 @@ class CommentController{
             next(e);
         }
     }
-
-
-
 }
 
 
-module.exports = new CommentController();
+module.exports = new Comment2Controller();

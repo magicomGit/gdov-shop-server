@@ -1,10 +1,8 @@
-const jwt = require('jsonwebtoken');
 const tokenService = require('../services/token-service');
 const userService = require('../services/user-service');
 const { validationResult } = require('express-validator');
 const ApiError = require('../exceptions/api-error');
 const axios = require("axios");
-const { User } = require('../models/models')
 
 class UserController {
     async register(req, res, next) {
@@ -26,11 +24,10 @@ class UserController {
         }
     }
 
-    async yandexAuth(req, res, next) {
+    async yandexAuth(res, next) {
         try {
 
 
-            const data = {grant_type:'authorization_code', code: '8635796', client_id:'74294c854986418fb0cbb047602f071b', client_secret: 'fce0aff9db5c4dc8b198d44eaa2f2f5b'}
             var FormData = require('form-data');
             const formData = new FormData()
             formData.append('grant_type', 'authorization_code')
@@ -50,7 +47,7 @@ class UserController {
         }
     }
 
-    async vkAuth(req, res, next) {
+    async vkAuth(req, next) {
         const { code } = req.body
         if (!code) {
             return next(ApiError.BadRequest('Не корректный запрос'))
@@ -66,7 +63,6 @@ class UserController {
         //const res2 =  fetch('https://oauth.vk.com/access_token?client_id=51414570&client_secret=jxFMW2CVT3mN6p1X3IbC&redirect_uri=http://test125.tmweb.ru/oauth/vk&code='+code)
         //console.log(5555555555555555,res2)
         try {
-            const headers = { 'Content-Type': 'multipart/form-data', };
             //const token = 'vk1.a.Nu0gNUtbSrqFVK4k6HZj5z4oIj9EAHPuFxnuE7_ZfpzAdTREKV1ZIIFZJS2xb2dDc_rLZ00cx_hYWqM5VVqUjz5O3C7T2WMBR5Ai3NYe3OhhxyH6Bq29RzDnMXOdzIRThcOYzXLszntrlmfodIvW4MdY5DLshubZsKV6eWxAwhK_x3B26lVpyNKcNBJrEfzR'
 
             // var FormData = require('form-data');
