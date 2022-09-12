@@ -59,7 +59,7 @@ class UserController {
 
        
 
-         const ee = await axios.get('https://oauth.vk.com/access_token?client_id=51414570&client_secret=jxFMW2CVT3mN6p1X3IbC&redirect_uri=http://185.178.44.121:5000&code='+code)
+         const ee = await axios.get('https://oauth.vk.com/access_token?client_id=51414570&client_secret=jxFMW2CVT3mN6p1X3IbC&code='+code)
          console.log(5555555555555,ee)
         
 
