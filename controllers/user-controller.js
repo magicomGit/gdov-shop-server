@@ -30,24 +30,20 @@ class UserController {
         try {
 
 
-            const headers = {
-                //'Content-Type': 'multipart/form-data',
-                'Content-Type': 'multipart/form-data',
-
-            };
-            const token = 'vk1.a.h2_YaH5O-4Wb4NaqQVHomuJBKR_dm1rtEKBFfwvF-vZYafd0WPVChexPP0893_osxbBaZ-F50jzInz3Pkqs_67ePIzhKbd-gc7L021tyfQdAq8llavz_HXhJ03q45RwBgMG0I8iA-yc12VjM9VVmsW16IY_8UWvnlYWD71XZpGUhYw9Oidesk9LvFPDiN7b0'
-
+            const data = {grant_type:'authorization_code', code: '8635796', client_id:'74294c854986418fb0cbb047602f071b', client_secret: 'fce0aff9db5c4dc8b198d44eaa2f2f5b'}
             var FormData = require('form-data');
             const formData = new FormData()
             formData.append('grant_type', 'authorization_code')
-            formData.append('code', '4050969')
+            formData.append('code', '8635796')
             formData.append('client_id', '74294c854986418fb0cbb047602f071b')
             formData.append('client_secret', 'fce0aff9db5c4dc8b198d44eaa2f2f5b')
-
-            const getUserDataParam = { access_token: token, v: '5.131' }
-            const resp = await axios.post('https://oauth.yandex.ru', formData, headers)
-
-            console.log(resp.data)
+          
+            const headers = { 'Content-Type': 'multipart/form-data' }
+          
+          
+          
+            const resp = await axios.post('https://oauth.yandex.ru', formData, { headers })
+            console.log(resp)
             return res.json(resp.data)
         } catch (e) {
             next(e);
@@ -55,53 +51,61 @@ class UserController {
     }
 
     async vkAuth(req, res, next) {
-        const { vkToken } = req.body
-        if (!vkToken) {
+        const { code } = req.body
+        if (!code) {
             return next(ApiError.BadRequest('Не корректный запрос'))
         }
 
+
+       
+
+         const ee = await axios.get('https://oauth.vk.com/access_token?client_id=51414570&client_secret=jxFMW2CVT3mN6p1X3IbC&redirect_uri=http://185.178.44.121:5000&code='+code)
+         console.log(5555555555555,ee)
         
+
+        //const res2 =  fetch('https://oauth.vk.com/access_token?client_id=51414570&client_secret=jxFMW2CVT3mN6p1X3IbC&redirect_uri=http://test125.tmweb.ru/oauth/vk&code='+code)
+        //console.log(5555555555555555,res2)
         try {
             const headers = { 'Content-Type': 'multipart/form-data', };
             //const token = 'vk1.a.Nu0gNUtbSrqFVK4k6HZj5z4oIj9EAHPuFxnuE7_ZfpzAdTREKV1ZIIFZJS2xb2dDc_rLZ00cx_hYWqM5VVqUjz5O3C7T2WMBR5Ai3NYe3OhhxyH6Bq29RzDnMXOdzIRThcOYzXLszntrlmfodIvW4MdY5DLshubZsKV6eWxAwhK_x3B26lVpyNKcNBJrEfzR'
 
-            var FormData = require('form-data');
-            const formData = new FormData()
-            formData.append('access_token', vkToken)
-            formData.append('v', '5.131')
+            // var FormData = require('form-data');
+            // const formData = new FormData()
+            // formData.append('access_token', vkToken)
+            // formData.append('v', '5.131')
 
             //const getUserDataParam = { access_token: vkToken, v: '5.131' }
-            const resp = await axios.post('https://api.vk.com/method/users.get', formData, headers)
+            //const resp = await axios.post('https://api.vk.com/method/users.get', formData, headers)
 
-            if (resp.data.error) {
-                console.log(resp.data.error.error_msg)
-                console.log(vkToken)
-                return next(ApiError.BadRequest(resp.data.error.error_msg))
-            }
+            // if (resp.data.error) {
+            //     console.log(resp.data.error.error_msg)
+            //     console.log(vkToken)
+            //     return next(ApiError.BadRequest(resp.data.error.error_msg))
+            // }
 
-            if (resp.data.response) {
-                const email = resp.data.response[0].id
-                const firstName = resp.data.response[0].first_name
-                const lastName = resp.data.response[0].last_name
+            // if (resp.data.response) {
+            //     const email = resp.data.response[0].id
+            //     const firstName = resp.data.response[0].first_name
+            //     const lastName = resp.data.response[0].last_name
 
-                const user = await User.findOne({ where: { email: String(resp.data.response[0].id) } })
+            //     const user = await User.findOne({ where: { email: String(resp.data.response[0].id) } })
 
-                if (!user) {
-                    const userData = await userService.registerVK(email, firstName, lastName);
-                    await tokenService.saveToken(userData.id, userData.refreshToken);
-                    res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })//30 дней
-                    return res.json(userData)
-                }
-                else{
-                    const userData = await userService.loginVK(email);
-                    await tokenService.saveToken(userData.id, userData.refreshToken);
-                    res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })//30 дней
-                    //console.log(userData)
-                    return res.json(userData)
-                }
+            //     if (!user) {
+            //         const userData = await userService.registerVK(email, firstName, lastName);
+            //         await tokenService.saveToken(userData.id, userData.refreshToken);
+            //         res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })//30 дней
+            //         return res.json(userData)
+            //     }
+            //     else{
+            //         const userData = await userService.loginVK(email);
+            //         await tokenService.saveToken(userData.id, userData.refreshToken);
+            //         res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })//30 дней
+            //         //console.log(userData)
+            //         return res.json(userData)
+            //     }
 
-            }
-            return next(ApiError.BadRequest('Ошибка авторизации ВКонтакте'))
+            // }
+            return next(ApiError.BadRequest('Ошибка авторизации ВКонтакте2'))
         } catch (e) {
             next(e);
         }
@@ -114,7 +118,7 @@ class UserController {
             const userData = await userService.login(email, password);
             await tokenService.saveToken(userData.id, userData.refreshToken);
             res.cookie('refreshToken', userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
-            
+
             return res.json(userData);
         } catch (e) {
             next(e);
@@ -138,13 +142,13 @@ class UserController {
     async activate(req, res, next) {
         try {
             const activationLink = req.query;
-            
+
 
             const isActivated = await userService.activate(activationLink);
             if (isActivated) {
-                return res.redirect(process.env.CLIENT_URL+'?isActivated=true');                
-            }else{
-                return res.redirect(process.env.CLIENT_URL+'?isActivated=false');
+                return res.redirect(process.env.CLIENT_URL + '?isActivated=true');
+            } else {
+                return res.redirect(process.env.CLIENT_URL + '?isActivated=false');
             }
 
         } catch (e) {
@@ -213,9 +217,9 @@ class UserController {
         const data = req.query
         if (!data) {
             return ApiError.BadRequest('Не корректный запрос')
-        }  
-        
-        const {  userId, productId } = data     
+        }
+
+        const { userId, productId } = data
 
         try {
             const rating = await Rating.findOne({ where: { [Op.and]: [{ userId: userId }, { productId: productId }] } })
@@ -255,9 +259,9 @@ class UserController {
 
         try {
             const oldRating = await Rating.findOne({ where: { [Op.and]: [{ userId: userId }, { productId: productId }] } })
-            const product =  await Product.findOne({where:{id:productId}})
+            const product = await Product.findOne({ where: { id: productId } })
             if (oldRating) {
-                product.rating = product.rating - oldRating.rating +  rating
+                product.rating = product.rating - oldRating.rating + rating
                 oldRating.rating = rating
                 await oldRating.save()
                 await product.save()
@@ -265,16 +269,16 @@ class UserController {
             } else {
                 const newRating = await Rating.create({ id: 0, rating, userId, productId })
                 product.rating = product.rating + rating
-                product.ratingCount ++
+                product.ratingCount++
                 await product.save()
 
-                const productRating = (product.rating/product.ratingCount).toFixed(1)
-                return res.json({userRating: newRating.rating, productRating:productRating})
+                const productRating = (product.rating / product.ratingCount).toFixed(1)
+                return res.json({ userRating: newRating.rating, productRating: productRating })
             }
-            const productRating = (product.rating/product.ratingCount).toFixed(1)
+            const productRating = (product.rating / product.ratingCount).toFixed(1)
 
-            
-            return res.json({userRating: oldRating.rating, productRating:productRating})
+
+            return res.json({ userRating: oldRating.rating, productRating: productRating })
         } catch (e) {
             next(e);
         }
@@ -284,9 +288,9 @@ class UserController {
         const data = req.query
         if (!data) {
             return ApiError.BadRequest('Не корректный запрос')
-        }  
-        
-        const {  userId, productId } = data     
+        }
+
+        const { userId, productId } = data
 
         try {
             const rating = await Rating.findOne({ where: { [Op.and]: [{ userId: userId }, { productId: productId }] } })
